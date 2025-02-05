@@ -12,6 +12,17 @@ services:
       - postgres-data:/var/lib/postgresql/data  
     restart: always 
 
+  redis:
+    image: redis:latest
+    container_name: redis_inst_api
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: always
+
 volumes:
   postgres-data:
+    driver: local
+  redis-data:
     driver: local
