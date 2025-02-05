@@ -6,3 +6,129 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User{
+  id Int @id @default(autoincrement())
+  name String
+  age Int
+  cpf String
+  email String @unique
+  password String
+  role UserTypes @default(Student)
+  teacherDisciplines Disciplines[] @relation("TeacherDisciplines")
+  schoolYears SchoolYears[] @relation("UserSchoolYears")
+  bulletin Bulletin[] @relation("StudentBulletin")
+  class Class[] @relation("TeacherClass")
+  studentSituation Boolean
+  occurrences Occurrence [] @relation("StudentOccurrence")
+  skipClasses Int
+  studentTests TestsScores[] @relation("TestsSocres")
+}
+
+model Occurrence{
+  id Int @id @default(autoincrement())
+  student User @relation(fields: [studentId], references: [id], name: "StudentOccurrence")
+  studentId Int
+  studentName String
+  situation String
+  penalty Penalty
+  other String @default("") 
+}
+
+model Class{
+  id Int @id @default(autoincrement())
+  name String
+  date DateTime
+  time DateTime
+  teachers User @relation(fields: [teachersId], references: [id], name: "TeacherClass")
+  teachersId Int @unique
+  discipline DisciplinesProps
+}
+
+model Disciplines{
+  id Int @id @default(autoincrement())
+  name String
+  teachers User @relation(fields: [teachersId], references: [id], name: "TeacherDisciplines")
+  teachersId Int @unique
+}
+
+model Bulletin{
+  id Int @id @default(autoincrement())
+  disciplines DisciplinesProps
+  testsScores TestsScores[] @relation("StudentTestsScores")
+  student User @relation(fields: [studentId], references: [id], name: "StudentBulletin")
+  studentId Int @unique
+}
+
+model TestsScores{
+  id Int @id @default(autoincrement())
+  testScore Float
+  bulletin Bulletin @relation(fields: [bulletinId], references: [id], name: "StudentTestsScores")
+  teacher User @relation(fields: [teacherId], references: [id], name: "TestsSocres")
+  teacherId Int
+  bulletinId Int
+}
+
+model SchoolYears {
+  id Int @id @default(autoincrement())
+  schollSeries SchoolSeries
+  schoolYears SchoolYearsProps
+  user User @relation(fields: [userId], references: [id], name: "UserSchoolYears")
+  userId Int
+}
+
+enum DisciplinesProps {
+  History
+  Geography
+  Sociology
+  Philosophy
+  Biology
+  Chemistry
+  Physics
+  Portuguese
+  Literature
+  English
+}
+
+
+enum Penalty {
+  VERBAL_WARNING 
+  WRITTEN_WARNING      
+  EXTRACURRICULAR_BAN   
+  TEMPORARY_SUSPENSION  
+  EDUCATIONAL_ASSIGNMENT
+  PARENTAL_MEETING  
+  CLASS_TRANSFER        
+  SCHOOL_SERVICE         
+  PERMANENT_RECORD_ENTRY  
+  EXPULSION     
+  OTHER          
+}
+
+
+
+
+enum SchoolSeries {
+  ElementarySchool
+  MiddleSchool
+  Highschool
+}
+
+enum SchoolYearsProps {
+  first
+  second
+  third
+  fourth
+  fifith
+  sixth
+  seventh
+  eight
+  night
+  tenght
+}
+
+enum UserTypes {
+  Student
+  Teacher
+  Other
+}
